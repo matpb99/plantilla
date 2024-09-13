@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 
 data = {
@@ -117,6 +118,7 @@ data = {
 }
 
 
+
 def html_master(selected_data):
     html_output = "<h4>TECNOLOGÍAS</h4>\n"
 
@@ -133,32 +135,31 @@ def html_master(selected_data):
     
     return html_output
 
-def html_categories(data):
+def extract_strong_text(description):
+    
+    match = re.search(r'<strong>(.*?)</strong>', description)
+    return match.group(1) if match else description 
+
+def main_function(data):
+
+    st.title("Palas Nox")
+
     selected_data = {}
 
-    def extract_strong_text(description):
-        """Extrae el texto entre etiquetas <strong> de una cadena HTML."""
-        match = re.search(r'<strong>(.*?)</strong>', description)
-        return match.group(1) if match else description
-
-    st.title("Selecciona las tecnologías a incluir")
-
-    # Diccionario para almacenar las selecciones del usuario
     checkbox_vars = {}
 
     for category, elements in data.items():
-        st.subheader(f"Categoría: {category}")
+        st.subheader(f"{category}")
         checkbox_vars[category] = []
         
-        # Crear casillas de verificación para cada elemento
         for element in elements:
             strong_text = extract_strong_text(element['description'])
             is_checked = st.checkbox(strong_text)
             checkbox_vars[category].append(is_checked)
     
-    # Botón para generar el HTML
+
     if st.button("Generar HTML"):
-        selected_data.clear()  # Limpiar la selección previa
+        selected_data.clear()  
 
         for category, elements in data.items():
             selected_data[category] = []
@@ -168,14 +169,19 @@ def html_categories(data):
             if not selected_data[category]:
                 del selected_data[category]
 
-        # Generar el HTML usando los elementos seleccionados
+
         html_result = html_master(selected_data)
         
-        # Mostrar el HTML en un área de texto
-        st.text_area("Resultado HTML", value=html_result, height=300)
+        
+        st.text_area(label="Resultado HTML", value=html_result, height=300, placeholder='aa')
+        st_copy_to_clipboard(html_result, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
 
-        # Mostrar el HTML renderizado en la interfaz de usuario
+        st.title('Vista Previa')
+        
         st.markdown(html_result, unsafe_allow_html=True)
 
-# Llamada a la función principal
-html_categories(data)
+if __name__ == '__main__':
+    st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
+    main_function(data)
+
+
