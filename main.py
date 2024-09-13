@@ -189,15 +189,45 @@ def main_function(data):
 
     checkbox_vars = {}
 
-    for category, elements in data.items():
-        st.subheader(f"{category}".capitalize())
-        checkbox_vars[category] = []
-        
-        for element in elements:
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader('EN EL MARCO DE LA PALA'.capitalize())
+        checkbox_vars['EN EL MARCO DE LA PALA'] = []
+
+        for element in data['EN EL MARCO DE LA PALA']:
             strong_text = extract_strong_text(element['description'])
             is_checked = st.checkbox(strong_text)
-            checkbox_vars[category].append(is_checked)
-    
+            checkbox_vars['EN EL MARCO DE LA PALA'].append(is_checked)
+
+        st.subheader('EN LA CARA DE LA PALA'.capitalize())
+        checkbox_vars['EN LA CARA DE LA PALA'] = []
+
+        for element in data['EN LA CARA DE LA PALA']:
+            strong_text = extract_strong_text(element['description'])
+            is_checked = st.checkbox(strong_text)
+            checkbox_vars['EN LA CARA DE LA PALA'].append(is_checked)
+  
+
+    with col2:
+
+        st.subheader('OTRAS ZONAS DE LA PALA'.capitalize())
+        checkbox_vars['OTRAS ZONAS DE LA PALA'] = []
+
+        for element in data['OTRAS ZONAS DE LA PALA']:
+            strong_text = extract_strong_text(element['description'])
+            is_checked = st.checkbox(strong_text)
+            checkbox_vars['OTRAS ZONAS DE LA PALA'].append(is_checked)
+        
+        st.subheader('EN EL NÚCLEO DE LA PALA'.capitalize())
+        checkbox_vars['EN EL NÚCLEO DE LA PALA'] = []
+
+        for element in data['EN EL NÚCLEO DE LA PALA']:
+            strong_text = extract_strong_text(element['description'])
+            is_checked = st.checkbox(strong_text)
+            checkbox_vars['EN EL NÚCLEO DE LA PALA'].append(is_checked)
+
 
     if st.button("Generar HTML"):
         selected_data.clear()  
@@ -213,7 +243,7 @@ def main_function(data):
 
         html_result = html_tech(selected_data)
         
-        
+    
         st.text_area(label="Resultado HTML", value=html_result, height=300, placeholder='aa')
         st_copy_to_clipboard(html_result, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
 
