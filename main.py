@@ -139,6 +139,39 @@ def extract_strong_text(description):
     match = re.search(r'<strong>(.*?)</strong>', description)
     return match.group(1) if match else description 
 
+def convertir_a_tabla_personalizada(texto):
+    # Dividimos el texto en líneas
+    lineas = texto.split('\n')
+
+    # Iniciamos la tabla HTML con el formato personalizado
+    html_output = '<table width="100%">\n<tbody>\n'
+
+    # Recorremos cada línea para formar las filas de la tabla
+    for linea in lineas:
+        # Eliminamos espacios en blanco al inicio y final de la línea
+        linea = linea.strip()
+        
+        # Intentamos dividir por tabulación o por dos puntos, si existe
+        if '\t' in linea:
+            clave, valor = linea.split('\t', 1)
+        elif ':' in linea:
+            clave, valor = linea.split(':', 1)
+        else:
+            # Si no hay tabulaciones o dos puntos, dividimos por la primera aparición de espacio
+            clave_valor = re.split(r'(?<=\S)\s(?=\S)', linea, 1)
+            if len(clave_valor) == 2:
+                clave, valor = clave_valor
+            else:
+                continue  # Si no puede dividirse en clave y valor, se ignora esa línea
+        
+        # Añadimos la fila a la tabla
+        html_output += f'  <tr>\n    <td><b>{clave}</b></td>\n    <td>{valor}</td>\n  </tr>\n'
+    
+    # Cerramos la tabla HTML
+    html_output += '</tbody>\n</table>'
+    
+    return html_output
+
 def main_function(data):
 
     st.title("Palas Nox")
@@ -185,6 +218,8 @@ def main_function(data):
         st_copy_to_clipboard(html_result, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
 
         st.title('Vista Previa')
+
+        st.text(convertir_a_tabla_personalizada(str(specs)))
         
         st.markdown(html_result, unsafe_allow_html=True)
 
