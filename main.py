@@ -118,8 +118,7 @@ data = {
 }
 
 
-
-def html_master(selected_data):
+def html_tech(selected_data):
     html_output = "<h4>TECNOLOGÍAS</h4>\n"
 
     for category, elements in selected_data.items():
@@ -144,12 +143,21 @@ def main_function(data):
 
     st.title("Palas Nox")
 
+    st.title('Descripción')
+    body = st.text_input(label='Inserte texto', key=28)
+
+    st.title('Especificaciones')
+    specs = st.text_input(label= 'Inserte texto', key=22)
+
+    st.title('Caracteristicas Técnicas')
+
+
     selected_data = {}
 
     checkbox_vars = {}
 
     for category, elements in data.items():
-        st.subheader(f"{category}")
+        st.subheader(f"{category}".capitalize())
         checkbox_vars[category] = []
         
         for element in elements:
@@ -170,7 +178,7 @@ def main_function(data):
                 del selected_data[category]
 
 
-        html_result = html_master(selected_data)
+        html_result = html_tech(selected_data)
         
         
         st.text_area(label="Resultado HTML", value=html_result, height=300, placeholder='aa')
