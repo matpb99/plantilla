@@ -1,7 +1,6 @@
 import re
 import streamlit as st
 from st_copy_to_clipboard import st_copy_to_clipboard
-from transformers import pipeline
 
 data = {
     "EN EL MARCO DE LA PALA": [
@@ -117,40 +116,6 @@ data = {
     ]
 }
 
-
-@st.cache_resource()
-def cargar_modelo():
-    
-    return pipeline("text2text-generation", model="t5-small")
-
-def interpretate_spec_raw_data(text):
-
-    prompt = f"""
-    A continuación tienes un texto con características y valores:
-    
-    {text}
-    
-    Por favor, extrae las características y valores y formatealos de la siguiente manera:
-    
-    #Característica: Valor
-
-    Por ejemplo, 
-
-    #Forma: Redonda #Peso: 350gr, y así
-    
-    
-    """
-    
-    salida = modelo(prompt, max_length=500)
-
-
-    # Verificar si la salida es de "text-generation" o "text2text-generation"
-    if 'generated_text' in salida[0]:
-        resultado = salida[0]['generated_text']
-    else:
-        resultado = salida[0]['text']
-    
-    return resultado
 
 def create_table_from_raw(texto):
 
