@@ -1,7 +1,7 @@
 import re
 import streamlit as st
 from st_copy_to_clipboard import st_copy_to_clipboard
-
+from transformers import pipeline
 
 data = {
     "EN EL MARCO DE LA PALA": [
@@ -118,23 +118,60 @@ data = {
 }
 
 
+@st.cache_resource()
+def cargar_modelo():
+    
+    return pipeline("text2text-generation", model="t5-small")
+
+def interpretate_spec_raw_data(text):
+
+    prompt = f"""
+    A continuación tienes un texto con características y valores:
+    
+    {text}
+    
+    Por favor, extrae las características y valores y formatealos de la siguiente manera:
+    
+    #Característica: Valor
+
+    Por ejemplo, 
+
+    #Forma: Redonda #Peso: 350gr, y así
+    
+    
+    """
+    
+    salida = modelo(prompt, max_length=500)
+
+
+    # Verificar si la salida es de "text-generation" o "text2text-generation"
+    if 'generated_text' in salida[0]:
+        resultado = salida[0]['generated_text']
+    else:
+        resultado = salida[0]['text']
+    
+    return resultado
+
 def create_table_from_raw(texto):
 
-    texto = texto.replace("-","")
-    html_output = '<h4>CARACTERÍSTICAS</h4>\n <table width="100%">\n<tbody>\n'
+
+    html_output = '<h4>CARACTERÍSTICAS</h4>\n <table width="100%">\n<tbody>\n' 
     
-    lineas = texto.split('-')
+    lineas = texto.split('#')
 
     for linea in lineas:
+        try:
 
-        linea = linea.strip()
-        st.text("esta es la linea {}".format(linea))
-        clave,valor = linea.split(":")
-        html_output += f' <tr>\n  <td><b>{clave}</b></td>\n    <td>{valor}</td>\n  </tr>\n'
+            linea = linea.strip()
+            clave,valor = linea.split(":")
+            html_output += f' <tr>\n  <td><b>{clave}</b></td>\n    <td>{valor}</td>\n  </tr>\n'
     
+        except: pass
+
     html_output += '</tbody>\n</table>'
 
-    html_output += '<h3>Calidad Certificada</h3> <p><strong>Testea Padel certifica la calidad de esta pala de pádel</strong> frente a roturas del marco y las caras de la pala, así como la durabilidad del producto frente a la fatiga.</p> <p><img src="https://cdn.shopify.com/s/files/1/2232/3715/files/CERTIFICATTESTEA_QualityCertificatedcopia_100x100.png?v=1.0" style="display: block; margin-left: auto; margin-right: auto;"></p>'
+    html_output += '<h3>Calidad Certificada</h3> <p><strong>Testea Padel certifica la calidad de esta pala de pádel</strong> frente a roturas del marco y las caras de la pala, así como la durabilidad del producto frente a la fatiga.</p> <table style="border: 0;" width="100%"> <tbody style="border: 0;"> <tr style="border: 0;"> <td style="border: 0;"> <p style="text-align: center; border: 0;"><iframe title="YouTube video player" src="https://www.youtube.com/embed/C9S0kt2OgIs" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p> </td> <td style="border: 0;"> <p style="text-align: center; border: 0;"><img src="https://cdn.shopify.com/s/files/1/2232/3715/files/CERTIFICATTESTEA_QualityCertificatedcopia_100x100.png?v=1.0"></p> </td> </tr> </tbody> </table>'
+
     
     return html_output
 
@@ -165,9 +202,9 @@ def html_master(body, specs, tech):
 
     return html_master_output
 
-
 def main_function(data):
 
+    
     st.title("Palas Nox")
 
     st.title('Descripción')
@@ -240,6 +277,7 @@ def main_function(data):
 
 if __name__ == '__main__':
     st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
+    modelo = cargar_modelo()
     main_function(data)
 
-
+'#Forma: Redonda #Peso: 350-370gr #Dimensiones: 50×30×4 cm #Núcleo: HR3 # Marco: 100% carbono # Cara: Fibra de carbono # Control: 10/10 # Potencia: 9/10'
