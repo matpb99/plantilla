@@ -242,7 +242,7 @@ def main_function(data):
 
 if __name__ == '__main__':
     st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
-    modelo = cargar_modelo()
+
     main_function(data)
 
 '#Forma: Redonda #Peso: 350-370gr #Dimensiones: 50×30×4 cm #Núcleo: HR3 # Marco: 100% carbono # Cara: Fibra de carbono # Control: 10/10 # Potencia: 9/10'
