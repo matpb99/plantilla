@@ -119,7 +119,6 @@ data = {
 
 def create_table_from_raw(texto):
 
-
     html_output = '<h4>CARACTERÍSTICAS</h4>\n <table width="100%">\n<tbody>\n' 
     
     lineas = texto.split('#')
