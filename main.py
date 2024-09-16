@@ -1,5 +1,5 @@
-import streamlit as st
 import re
+import streamlit as st
 from st_copy_to_clipboard import st_copy_to_clipboard
 
 
@@ -118,6 +118,31 @@ data = {
 }
 
 
+def create_table_from_raw(texto):
+
+    texto = texto.replace("-","")
+    html_output = '<h4>CARACTERÍSTICAS</h4>\n <table width="100%">\n<tbody>\n'
+    
+    lineas = texto.split('-')
+
+    for linea in lineas:
+
+        linea = linea.strip()
+        st.text("esta es la linea {}".format(linea))
+        clave,valor = linea.split(":")
+        html_output += f' <tr>\n  <td><b>{clave}</b></td>\n    <td>{valor}</td>\n  </tr>\n'
+    
+    html_output += '</tbody>\n</table>'
+
+    html_output += '<h3>Calidad Certificada</h3> <p><strong>Testea Padel certifica la calidad de esta pala de pádel</strong> frente a roturas del marco y las caras de la pala, así como la durabilidad del producto frente a la fatiga.</p> <p><img src="https://cdn.shopify.com/s/files/1/2232/3715/files/CERTIFICATTESTEA_QualityCertificatedcopia_100x100.png?v=1.0" style="display: block; margin-left: auto; margin-right: auto;"></p>'
+    
+    return html_output
+
+def extract_category(text):
+    
+    match = re.search(r'<strong>(.*?)</strong>', text)
+    return match.group(1) if match else text 
+
 def html_tech(selected_data):
     html_output = "<h4>TECNOLOGÍAS</h4>\n"
 
@@ -134,43 +159,12 @@ def html_tech(selected_data):
     
     return html_output
 
-def extract_strong_text(description):
-    
-    match = re.search(r'<strong>(.*?)</strong>', description)
-    return match.group(1) if match else description 
+def html_master(body, specs, tech):
 
-def convertir_a_tabla_personalizada(texto):
-    # Dividimos el texto en líneas
-    lineas = texto.split('\n')
+    html_master_output = body + specs + tech
 
-    # Iniciamos la tabla HTML con el formato personalizado
-    html_output = '<table width="100%">\n<tbody>\n'
+    return html_master_output
 
-    # Recorremos cada línea para formar las filas de la tabla
-    for linea in lineas:
-        # Eliminamos espacios en blanco al inicio y final de la línea
-        linea = linea.strip()
-        
-        # Intentamos dividir por tabulación o por dos puntos, si existe
-        if '\t' in linea:
-            clave, valor = linea.split('\t', 1)
-        elif ':' in linea:
-            clave, valor = linea.split(':', 1)
-        else:
-            # Si no hay tabulaciones o dos puntos, dividimos por la primera aparición de espacio
-            clave_valor = re.split(r'(?<=\S)\s(?=\S)', linea, 1)
-            if len(clave_valor) == 2:
-                clave, valor = clave_valor
-            else:
-                continue  # Si no puede dividirse en clave y valor, se ignora esa línea
-        
-        # Añadimos la fila a la tabla
-        html_output += f'  <tr>\n    <td><b>{clave}</b></td>\n    <td>{valor}</td>\n  </tr>\n'
-    
-    # Cerramos la tabla HTML
-    html_output += '</tbody>\n</table>'
-    
-    return html_output
 
 def main_function(data):
 
@@ -184,11 +178,7 @@ def main_function(data):
 
     st.title('Caracteristicas Técnicas')
 
-
-    selected_data = {}
-
-    checkbox_vars = {}
-
+    selected_data, checkbox_vars = {} , {}
 
     col1, col2 = st.columns(2)
 
@@ -197,7 +187,7 @@ def main_function(data):
         checkbox_vars['EN EL MARCO DE LA PALA'] = []
 
         for element in data['EN EL MARCO DE LA PALA']:
-            strong_text = extract_strong_text(element['description'])
+            strong_text = extract_category(element['description'])
             is_checked = st.checkbox(strong_text)
             checkbox_vars['EN EL MARCO DE LA PALA'].append(is_checked)
 
@@ -205,18 +195,17 @@ def main_function(data):
         checkbox_vars['EN LA CARA DE LA PALA'] = []
 
         for element in data['EN LA CARA DE LA PALA']:
-            strong_text = extract_strong_text(element['description'])
+            strong_text = extract_category(element['description'])
             is_checked = st.checkbox(strong_text)
             checkbox_vars['EN LA CARA DE LA PALA'].append(is_checked)
   
-
     with col2:
 
         st.subheader('OTRAS ZONAS DE LA PALA'.capitalize())
         checkbox_vars['OTRAS ZONAS DE LA PALA'] = []
 
         for element in data['OTRAS ZONAS DE LA PALA']:
-            strong_text = extract_strong_text(element['description'])
+            strong_text = extract_category(element['description'])
             is_checked = st.checkbox(strong_text)
             checkbox_vars['OTRAS ZONAS DE LA PALA'].append(is_checked)
         
@@ -224,10 +213,9 @@ def main_function(data):
         checkbox_vars['EN EL NÚCLEO DE LA PALA'] = []
 
         for element in data['EN EL NÚCLEO DE LA PALA']:
-            strong_text = extract_strong_text(element['description'])
+            strong_text = extract_category(element['description'])
             is_checked = st.checkbox(strong_text)
             checkbox_vars['EN EL NÚCLEO DE LA PALA'].append(is_checked)
-
 
     if st.button("Generar HTML"):
         selected_data.clear()  
@@ -240,18 +228,15 @@ def main_function(data):
             if not selected_data[category]:
                 del selected_data[category]
 
+        html_master_output = html_master(body, create_table_from_raw(specs), html_tech(selected_data) )
 
-        html_result = html_tech(selected_data)
+
+        st.text_area(label="Resultado HTML", value=html_master_output, height=300)
+        st_copy_to_clipboard(html_master_output, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
+
         
-    
-        st.text_area(label="Resultado HTML", value=html_result, height=300, placeholder='aa')
-        st_copy_to_clipboard(html_result, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
-
         st.title('Vista Previa')
-
-        st.text(convertir_a_tabla_personalizada(str(specs)))
-        
-        st.markdown(html_result, unsafe_allow_html=True)
+        st.markdown(html_master_output, unsafe_allow_html=True)
 
 if __name__ == '__main__':
     st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
