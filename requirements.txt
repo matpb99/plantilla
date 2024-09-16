@@ -1,4 +1,2 @@
 streamlit
 st_copy_to_clipboard
-numpy=>1.18.5
-scipy<=1.26.0
