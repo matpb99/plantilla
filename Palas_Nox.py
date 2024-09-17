@@ -116,7 +116,6 @@ data = {
     ]
 }
 
-
 def create_table_from_raw(texto):
 
     html_output = '<h4>CARACTERÍSTICAS</h4>\n <table width="100%">\n<tbody>\n' 
@@ -168,7 +167,6 @@ def html_master(body, specs, tech):
 
 def main_function(data):
 
-    
     st.title("Palas Nox")
 
     st.title('Descripción')
@@ -231,15 +229,15 @@ def main_function(data):
 
         html_master_output = html_master(body, create_table_from_raw(specs), html_tech(selected_data) )
 
-
         st.text_area(label="Resultado HTML", value=html_master_output, height=300)
         st_copy_to_clipboard(html_master_output, before_copy_label='📋Copiar al Portapapeles', after_copy_label='✅Texto Copiado!')
 
-        
         st.title('Vista Previa')
         st.markdown(html_master_output, unsafe_allow_html=True)
 
 if __name__ == '__main__':
     st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
 
+    with st.sidebar:
+        pass
     main_function(data)
