@@ -167,15 +167,16 @@ def html_master(body, specs, tech):
 
 def main_function(data):
 
-    st.title("Palas Nox")
+    st.title('_Plantillas_ :blue[_SurSports_]')
+    st.header(":red[Palas Nox]")
 
-    st.title('Descripción')
+    st.header('Descripción')
     body = st.text_input(label='Inserte texto', key=28)
 
-    st.title('Especificaciones')
+    st.header('Especificaciones')
     specs = st.text_input(label= 'Inserte texto', key=22)
 
-    st.title('Caracteristicas Técnicas')
+    st.header('Caracteristicas Técnicas')
 
     selected_data, checkbox_vars = {} , {}
 
@@ -239,5 +240,6 @@ if __name__ == '__main__':
     st.set_page_config(layout = "centered", initial_sidebar_state = "auto", page_title = "Plantillas SurSports")
 
     with st.sidebar:
+        st.title('Categorías')
         pass
     main_function(data)
